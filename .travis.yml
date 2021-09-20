@@ -1,0 +1,17 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t evilfrees/react-test -f ./client/Dockerfile.dev ./clientt
+
+script:
+  - docker run evilfrees/react-test npm test -- --coverage
+
+after_success:
+  - docker build -t evilfrees/multi-client ./client
+  - docker build -t evilfrees/multi-server ./server
+  - docker build -t evilfrees/multi-worker ./worker
+  - docker build -t evilfrees/multi-nginx ./nginx
+
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
